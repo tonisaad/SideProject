@@ -35,8 +35,16 @@ const filteredProducts = computed(() => {
   })
 })
 
-// TODO: show how many products match (a result count).
-// TODO: show a sensible empty state when nothing matches.
+// e.g. "1 product" or "3 products"
+const resultText = computed(() => {
+  const count = filteredProducts.value.length
+  return count === 1 ? '1 product' : `${count} products`
+})
+
+function clearFilters() {
+  search.value = ''
+  category.value = 'all'
+}
 </script>
 
 <template>
@@ -54,12 +62,17 @@ const filteredProducts = computed(() => {
       </option>
     </select>
 
-    <!-- TODO: add a result count and an empty state. -->
-    <ul>
+    <p aria-live="polite">{{ resultText }}</p>
+
+    <ul v-if="filteredProducts.length > 0">
       <li v-for="product in filteredProducts" :key="product.name">
         {{ product.name }} — {{ product.lender }} — {{ product.rate.toFixed(2) }}%
       </li>
     </ul>
+    <div v-else>
+      <p>No products match your search.</p>
+      <button type="button" @click="clearFilters">Clear filters</button>
+    </div>
   </section>
 </template>
 
