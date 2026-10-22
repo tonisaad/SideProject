@@ -34,7 +34,7 @@ function acme_render_products($atts) {
         $html .= '</tr>';
     }
     $html .= '</table>';
-    echo $html;
+    return $html;
 }
 add_shortcode('acme_products', 'acme_render_products');
 
