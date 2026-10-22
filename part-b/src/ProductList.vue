@@ -35,7 +35,6 @@ const filteredProducts = computed(() => {
   })
 })
 
-// TODO: format each rate to 2 decimal places.
 // TODO: show how many products match (a result count).
 // TODO: show a sensible empty state when nothing matches.
 </script>
@@ -55,11 +54,10 @@ const filteredProducts = computed(() => {
       </option>
     </select>
 
-    <!-- TODO: show name, lender, and rate (to 2 decimal places). -->
     <!-- TODO: add a result count and an empty state. -->
     <ul>
       <li v-for="product in filteredProducts" :key="product.name">
-        {{ product.name }} — {{ product.lender }} — {{ product.rate }}%
+        {{ product.name }} — {{ product.lender }} — {{ product.rate.toFixed(2) }}%
       </li>
     </ul>
   </section>
