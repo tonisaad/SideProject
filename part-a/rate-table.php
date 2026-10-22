@@ -28,9 +28,9 @@ function acme_render_products($atts) {
         // Was: one extra query per row (N+1), using $wpdb without `global $wpdb`,
         // so it crashed.
         $html .= '<tr>';
-        $html .= '<td>' . $product->name . '</td>';
-        $html .= '<td>' . $product->lender . '</td>';
-        $html .= '<td>' . $product->rate . '%</td>';
+        $html .= '<td>' . esc_html($product->name) . '</td>';
+        $html .= '<td>' . esc_html($product->lender) . '</td>';
+        $html .= '<td>' . esc_html(number_format((float) $product->rate, 2)) . '%</td>';
         $html .= '</tr>';
     }
     $html .= '</table>';
