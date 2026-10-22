@@ -11,17 +11,30 @@ onMounted(async () => {
 })
 
 const search = ref('')
+const category = ref('all')
 
-// Products whose name contains the search term (case-insensitive).
-const filteredProducts = computed(() => {
-  const term = search.value.trim().toLowerCase()
-  return products.value.filter((product) =>
-    product.name.toLowerCase().includes(term)
-  )
+// Unique categories from the data, e.g. ['personal', 'car', 'debt-consolidation'],
+const categories = computed(() => {
+  const allCategories = products.value.map((product) => product.category)
+  return [...new Set(allCategories)]
 })
 
-// TODO: add a reactive category filter (for example: all, personal, car, debt-consolidation).
-// TODO: create a computed list that applies both the search term and the category filter.
+// Turns "debt-consolidation" into "Debt consolidation" for display.
+function categoryLabel(value) {
+  const text = value.replaceAll('-', ' ')
+  return text.charAt(0).toUpperCase() + text.slice(1)
+}
+
+// Products matching both the search term (case-insensitive) and the category.
+const filteredProducts = computed(() => {
+  const term = search.value.trim().toLowerCase()
+  return products.value.filter((product) => {
+    const matchesSearch = product.name.toLowerCase().includes(term)
+    const matchesCategory = category.value === 'all' || product.category === category.value
+    return matchesSearch && matchesCategory
+  })
+})
+
 // TODO: format each rate to 2 decimal places.
 // TODO: show how many products match (a result count).
 // TODO: show a sensible empty state when nothing matches.
@@ -34,7 +47,13 @@ const filteredProducts = computed(() => {
     <label for="product-search">Search by name</label>
     <input id="product-search" v-model="search" type="search" />
 
-    <!-- TODO: category filter -->
+    <label for="product-category">Category</label>
+    <select id="product-category" v-model="category">
+      <option value="all">All categories</option>
+      <option v-for="value in categories" :key="value" :value="value">
+        {{ categoryLabel(value) }}
+      </option>
+    </select>
 
     <!-- TODO: show name, lender, and rate (to 2 decimal places). -->
     <!-- TODO: add a result count and an empty state. -->

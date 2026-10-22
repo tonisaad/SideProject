@@ -9,4 +9,7 @@ The category comes from the shortcode attribute, which any post author (even a C
     Wrapped product name, lender and rate in `esc_html()` and formatted the rate to 2 decimal places.
     Values from the database were printed straight into HTML, so anything stored there could run as script in visitors' browsers (XSS). I escape at the point of output so every value is covered, whatever its source.
     I would also sanitise the data when it's saved but I can't, because that code isn't in this file. Escaping on output is the protection that matters for this table.
-3.
+3.Category filter built from the data.**
+   The dropdown options come from the unique categories in products.json, and a small function turns "debt-consolidation" into "Debt consolidation" for display. I wrote it in short, named steps (and used `replaceAll` instead of a regex) so it's easy to read.
+   A new category shows up in the filter automatically, with no code change, and the filter can never offer a category with no products. Readable code matters more than compact code for something a teammate will maintain.
+   I didn't hard-code the category list with hand-written labels. It would give marketing exact control over wording, but someone would have to remember to update it whenever a category is added.
