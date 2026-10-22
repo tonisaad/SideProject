@@ -9,7 +9,10 @@ function acme_get_products($category) {
     global $wpdb;
     $results = $wpdb->get_results(
         $wpdb->prepare(
-            "SELECT * FROM wp_acme_products WHERE category = %s AND active = 1",
+            "SELECT p.name, p.rate, l.name AS lender
+             FROM wp_acme_products p
+             LEFT JOIN wp_acme_lenders l ON l.id = p.lender_id
+             WHERE p.category = %s AND p.active = 1",
             $category
         )
     );
@@ -22,12 +25,11 @@ function acme_render_products($atts) {
 
     $html = '<table class="acme-products">';
     foreach ($products as $product) {
-        $lender = $wpdb->get_var(
-            "SELECT name FROM wp_acme_lenders WHERE id = " . $product->lender_id
-        );
+        // Was: one extra query per row (N+1), using $wpdb without `global $wpdb`,
+        // so it crashed.
         $html .= '<tr>';
         $html .= '<td>' . $product->name . '</td>';
-        $html .= '<td>' . $lender . '</td>';
+        $html .= '<td>' . $product->lender . '</td>';
         $html .= '<td>' . $product->rate . '%</td>';
         $html .= '</tr>';
     }
