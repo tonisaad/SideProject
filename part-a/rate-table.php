@@ -8,7 +8,10 @@
 function acme_get_products($category) {
     global $wpdb;
     $results = $wpdb->get_results(
-        "SELECT * FROM wp_acme_products WHERE category = '" . $category . "' AND active = 1"
+        $wpdb->prepare(
+            "SELECT * FROM wp_acme_products WHERE category = %s AND active = 1",
+            $category
+        )
     );
     return $results;
 }
