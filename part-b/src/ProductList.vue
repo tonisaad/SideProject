@@ -6,12 +6,12 @@ import { ref, computed, onMounted } from 'vue'
 const products = ref([])
 
 onMounted(async () => {
-  const res = await fetch('/products.json')
-  products.value = await res.json()
+  const response = await fetch('/products.json')
+  products.value = await response.json()
 })
 
-const search = ref('')
-const category = ref('all')
+const searchTerm = ref('')
+const selectedCategory = ref('all')
 
 // Unique categories from the data, e.g. ['personal', 'car', 'debt-consolidation'],
 const categories = computed(() => {
@@ -20,30 +20,30 @@ const categories = computed(() => {
 })
 
 // Turns "debt-consolidation" into "Debt consolidation" for display.
-function categoryLabel(value) {
-  const text = value.replaceAll('-', ' ')
+function categoryLabel(category) {
+  const text = category.replaceAll('-', ' ')
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
 // Products matching both the search term (case-insensitive) and the category.
 const filteredProducts = computed(() => {
-  const term = search.value.trim().toLowerCase()
+  const term = searchTerm.value.trim().toLowerCase()
   return products.value.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(term)
-    const matchesCategory = category.value === 'all' || product.category === category.value
+    const matchesCategory = selectedCategory.value === 'all' || product.category === selectedCategory.value
     return matchesSearch && matchesCategory
   })
 })
 
 // e.g. "1 product" or "3 products"
-const resultText = computed(() => {
+const resultCountText = computed(() => {
   const count = filteredProducts.value.length
   return count === 1 ? '1 product' : `${count} products`
 })
 
 function clearFilters() {
-  search.value = ''
-  category.value = 'all'
+  searchTerm.value = ''
+  selectedCategory.value = 'all'
 }
 </script>
 
@@ -52,17 +52,17 @@ function clearFilters() {
     <h2>Products</h2>
 
     <label for="product-search">Search by name</label>
-    <input id="product-search" v-model="search" type="search" />
+    <input id="product-search" v-model="searchTerm" type="search" />
 
     <label for="product-category">Category</label>
-    <select id="product-category" v-model="category">
+    <select id="product-category" v-model="selectedCategory">
       <option value="all">All categories</option>
-      <option v-for="value in categories" :key="value" :value="value">
-        {{ categoryLabel(value) }}
+      <option v-for="category in categories" :key="category" :value="category">
+        {{ categoryLabel(category) }}
       </option>
     </select>
 
-    <p aria-live="polite">{{ resultText }}</p>
+    <p aria-live="polite">{{ resultCountText }}</p>
 
     <ul v-if="filteredProducts.length > 0">
       <li v-for="product in filteredProducts" :key="product.name">
