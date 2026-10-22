@@ -28,9 +28,11 @@ function categoryLabel(category) {
 // Products matching both the search term (case-insensitive) and the category.
 const filteredProducts = computed(() => {
   const term = searchTerm.value.trim().toLowerCase()
+  const category = selectedCategory.value
+
   return products.value.filter((product) => {
     const matchesSearch = product.name.toLowerCase().includes(term)
-    const matchesCategory = selectedCategory.value === 'all' || product.category === selectedCategory.value
+    const matchesCategory = category === 'all' || product.category === category
     return matchesSearch && matchesCategory
   })
 })
