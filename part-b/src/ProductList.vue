@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 
+// --- Data ---
+
 // The product data loads from public/products.json.
 // This gives you a working list to build on. The filtering logic is yours.
 const products = ref([])
@@ -9,6 +11,8 @@ onMounted(async () => {
   const response = await fetch('/products.json')
   products.value = await response.json()
 })
+
+// --- Filters (linked to the search box and category dropdown) ---
 
 const searchTerm = ref('')
 const selectedCategory = ref('all')
@@ -24,6 +28,13 @@ function categoryLabel(category) {
   const text = category.replaceAll('-', ' ')
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
+
+function clearFilters() {
+  searchTerm.value = ''
+  selectedCategory.value = 'all'
+}
+
+// --- Results ---
 
 // Products matching both the search term (case-insensitive) and the category.
 const filteredProducts = computed(() => {
@@ -42,17 +53,13 @@ const resultCountText = computed(() => {
   const count = filteredProducts.value.length
   return count === 1 ? '1 product' : `${count} products`
 })
-
-function clearFilters() {
-  searchTerm.value = ''
-  selectedCategory.value = 'all'
-}
 </script>
 
 <template>
   <section>
     <h2>Products</h2>
 
+    <!-- Filters -->
     <label for="product-search">Search by name</label>
     <input id="product-search" v-model="searchTerm" type="search" />
 
@@ -64,6 +71,7 @@ function clearFilters() {
       </option>
     </select>
 
+    <!-- Results: a count, then the list or an empty state -->
     <p aria-live="polite">{{ resultCountText }}</p>
 
     <ul v-if="filteredProducts.length > 0">
